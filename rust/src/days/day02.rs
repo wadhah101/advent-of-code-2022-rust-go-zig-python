@@ -1,14 +1,19 @@
 use crate::{Solution, SolutionPair};
-use itertools::Itertools;
 use std::fs::read_to_string;
 
 ///////////////////////////////////////////////////////////////////////////////
 
 #[derive(PartialEq)]
 enum Shape {
-    Rock,
-    Paper,
-    Scissors,
+    Rock = 1,
+    Paper = 2,
+    Scissors = 3,
+}
+
+enum RoundResult {
+    Win = 6,
+    Loss = 0,
+    Draw = 3,
 }
 
 impl Shape {
@@ -20,23 +25,15 @@ impl Shape {
             _ => panic!("Invalid shape"),
         }
     }
-    fn against(&self, other: &Self) -> u16 {
+    fn against(&self, other: &Self) -> RoundResult {
         if self == other {
-            return 3;
+            return RoundResult::Draw;
         }
         match (self, other) {
-            (Self::Rock, Self::Scissors) => 6,
-            (Self::Paper, Self::Rock) => 6,
-            (Self::Scissors, Self::Paper) => 6,
-            _ => 0,
-        }
-    }
-
-    fn score(&self) -> u16 {
-        match self {
-            Self::Rock => 1,
-            Self::Paper => 2,
-            Self::Scissors => 3,
+            (Self::Rock, Self::Scissors) => RoundResult::Win,
+            (Self::Paper, Self::Rock) => RoundResult::Win,
+            (Self::Scissors, Self::Paper) => RoundResult::Win,
+            _ => RoundResult::Loss,
         }
     }
 }
@@ -53,8 +50,8 @@ pub fn solve() -> SolutionPair {
                 Shape::from_str(items.get(1).unwrap()),
             )
         })
-        .map(|(a, b)| (b.against(&a) + b.score()) as u64)
-        .sum::<u64>();
+        .map(|(a, b)| (b.against(&a) as u16 + b as u16) as u32)
+        .sum::<u32>();
 
     // Your solution here...
 
